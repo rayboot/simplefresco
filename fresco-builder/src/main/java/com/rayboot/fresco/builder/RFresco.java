@@ -56,15 +56,15 @@ public class RFresco {
         return new RFresco(Uri.parse(path));
     }
 
-    public static  RFresco load(int resourceId) {
+    public static RFresco load(int resourceId) {
         return new RFresco(new Uri.Builder().scheme(UriUtil.LOCAL_RESOURCE_SCHEME).path(String.valueOf(resourceId)).build());
     }
 
-    public static  RFresco load(File file) {
+    public static RFresco load(File file) {
         return new RFresco(Uri.fromFile(file));
     }
 
-    public static  RFresco load(Uri uri) {
+    public static RFresco load(Uri uri) {
         return new RFresco(uri);
     }
 
@@ -261,7 +261,7 @@ public class RFresco {
             isHierarchyChange = true;
         }
 
-        if (placeholderDrawable != null ) {
+        if (placeholderDrawable != null) {
             hierarchy.setPlaceholderImage(placeholderDrawable);
             isHierarchyChange = true;
         }
@@ -309,7 +309,7 @@ public class RFresco {
         }
 
         PipelineDraweeControllerBuilder controllerBuilder = Fresco.newDraweeControllerBuilder();
-        DraweeController controller  = null;
+        DraweeController controller = null;
         boolean isControllerChange = false;
         if (callback != null) {
             controllerBuilder.setControllerListener(callback);
@@ -329,7 +329,7 @@ public class RFresco {
         if (request != null) {
             controllerBuilder.setImageRequest(request);
             isControllerChange = true;
-        }else if (request == null && isControllerChange) {
+        } else if (request == null && isControllerChange) {
             controllerBuilder.setUri(uri);
         }
 

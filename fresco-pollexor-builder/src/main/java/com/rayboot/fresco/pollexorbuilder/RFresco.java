@@ -1,6 +1,5 @@
 package com.rayboot.fresco.pollexorbuilder;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.PointF;
@@ -66,6 +65,11 @@ public class RFresco {
         thumbor = Thumbor.create(host, key);
     }
 
+    public static void init(Context context, ImagePipelineConfig config) {
+        Fresco.initialize(context, config);
+        thumbor = null;
+    }
+
     public RFresco(Uri uri) {
         if (uri == null) {
             throw new IllegalArgumentException("uri == null");
@@ -73,19 +77,19 @@ public class RFresco {
         this.uri = uri;
     }
 
-    public RFresco load(String path) {
+    public static RFresco load(String path) {
         return new RFresco(Uri.parse(path));
     }
 
-    public static  RFresco load(int resourceId) {
+    public static RFresco load(int resourceId) {
         return new RFresco(new Uri.Builder().scheme(UriUtil.LOCAL_RESOURCE_SCHEME).path(String.valueOf(resourceId)).build());
     }
 
-    public RFresco load(File file) {
+    public static RFresco load(File file) {
         return new RFresco(Uri.fromFile(file));
     }
 
-    public RFresco load(Uri uri) {
+    public static RFresco load(Uri uri) {
         return new RFresco(uri);
     }
 
@@ -327,7 +331,7 @@ public class RFresco {
 
 
         ThumborUrlBuilder urlBuilder = null;
-        if (!noThumbor && uri.toString().contains("http")) {
+        if (thumbor != null && !noThumbor && uri.toString().contains("http")) {
             urlBuilder = thumbor.buildImage(uri.toString());
             if (resize != null) {
                 urlBuilder.resize(resize.x, resize.y);
@@ -359,7 +363,7 @@ public class RFresco {
                 urlBuilder.format(ThumborUrlBuilder.ImageFormat.WEBP);
             }
 
-            if (filters !=null && filters.size() > 0) {
+            if (filters != null && filters.size() > 0) {
                 urlBuilder.filter((String[]) filters.toArray());
             }
 
@@ -473,7 +477,6 @@ public class RFresco {
                 controllerBuilder.setLowResImageRequest(ImageRequest.fromUri(urlBuilder.filter(ThumborUrlBuilder.grayscale(), ThumborUrlBuilder.quality(1)).toUrl()));
             }
         }
-
 
 
         if (isControllerChange) {

@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        RFresco.init(this, ImagePipelineConfigFactory.getImagePipelineConfig(this));
+        RFresco.init(this, ImagePipelineConfigFactory.getOkHttpImagePipelineConfig(this));
         setContentView(R.layout.activity_main);
 
         imageview = (SimpleDraweeView) findViewById(R.id.imageview);
