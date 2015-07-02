@@ -1,7 +1,9 @@
-package com.rayboot.fresco.builder;
+package com.github.rayboot.fresco.pollexorbuilder;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
@@ -19,13 +21,19 @@ import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.imagepipeline.request.Postprocessor;
+import com.squareup.pollexor.Thumbor;
+import com.squareup.pollexor.ThumborUrlBuilder;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by rayboot on 15/6/15.
  */
 public class RFresco {
+    private static Thumbor thumbor = null;
+
     Uri uri;
     float sizeRatio = -1.0f;
     ScalingUtils.ScaleType actualScaleType = ScalingUtils.ScaleType.CENTER_CROP;
@@ -39,10 +47,27 @@ public class RFresco {
     boolean progressiveRenderingEnabled = false;
     boolean localThumbnailPreviewsEnabled = false;
     boolean autoRotateEnabled = false;
+    boolean enableLowImage = false;
     ResizeOptions resizeOptions = null;
+    Rect cropRect = null;
+    Point resize = null;
+    boolean noSmart = false;
+    boolean noTrim = false;
+    boolean noThumbor = false;
+    boolean noWebP = false;
+    boolean flipHorizontally = false;
+    boolean flipVertically = false;
+    boolean fit = true;
+    List<String> filters = null;
+
+    public static void init(Context context, ImagePipelineConfig config, String host, String key) {
+        Fresco.initialize(context, config);
+        thumbor = Thumbor.create(host, key);
+    }
 
     public static void init(Context context, ImagePipelineConfig config) {
         Fresco.initialize(context, config);
+        thumbor = null;
     }
 
     public RFresco(Uri uri) {
@@ -70,6 +95,61 @@ public class RFresco {
 
     public RFresco setSizeRatio(float ratio) {
         this.sizeRatio = ratio;
+        return this;
+    }
+
+    //thumbor 相关设置
+
+    public RFresco tCrop(int left, int top, int right, int bottom) {
+        this.cropRect = new Rect(left, top, right, bottom);
+        return this;
+    }
+
+    public RFresco tResize(int w, int h) {
+        this.resize = new Point(w, h);
+        return this;
+    }
+
+    public RFresco tNoFit() {
+        this.fit = false;
+        return this;
+    }
+
+    public RFresco tNoSmart() {
+        this.noSmart = true;
+        return this;
+    }
+
+    public RFresco tFilters(String... filters) {
+        this.filters = new ArrayList<>(10);
+        for (String filter : filters) {
+            this.filters.add(filter);
+        }
+        return this;
+    }
+
+    public RFresco tNoTrim() {
+        this.noTrim = true;
+        return this;
+    }
+
+    public RFresco tNoWebP() {
+        this.noWebP = true;
+        return this;
+    }
+
+    public RFresco tNo() {
+        this.noThumbor = true;
+        return this;
+    }
+
+    public RFresco tFlipHorizontally() {
+        this.flipHorizontally = true;
+        return this;
+    }
+
+    public RFresco tFlipVertically() {
+        this.flipVertically = true;
         return this;
     }
 
@@ -127,7 +207,7 @@ public class RFresco {
 
 //    //如要使用tile mode显示, 需要设置为none
 //    public RFresco tile() {
-//        return setScaleType(ScalingUtils.ScaleType.fromString("none"));
+//        return setScaleType(null);
 //    }
 
     public RFresco setScaleType(ScalingUtils.ScaleType actualScaleType) {
@@ -208,11 +288,8 @@ public class RFresco {
     /*
         修改图片尺寸
         调整大小并不是修改原来的文件，而是在解码之前，在native内存中修改。
-
         这个缩放方法，比Android内置的缩放范围更大。Android相机生成的照片一般尺寸都很大，需要调整大小之后才能被显示。
-
         目前，仅仅支持JPEG格式的图片，同时，大部分的Android系统相机图片都是JPEG的。
-
         如果要修改图片尺寸，创建ImageRequest时，提供一个 ResizeOptions:
      */
     public RFresco resizeOptions(int width, int height) {
@@ -229,6 +306,12 @@ public class RFresco {
         return this;
     }
 
+
+    public RFresco enableLowResImage() {
+        this.enableLowImage = true;
+        return this;
+    }
+
     public void into(SimpleDraweeView view, ControllerListener<Object> callback) {
         into(view, callback, null);
     }
@@ -242,6 +325,64 @@ public class RFresco {
     }
 
     public void into(SimpleDraweeView view, ControllerListener<Object> callback, Postprocessor postprocessor) {
+        if (sizeRatio > 0) {
+            view.setAspectRatio(sizeRatio);
+        }
+
+
+        ThumborUrlBuilder urlBuilder = null;
+        if (thumbor != null && !noThumbor && uri.toString().contains("http")) {
+            urlBuilder = thumbor.buildImage(uri.toString());
+            if (resize != null) {
+                urlBuilder.resize(resize.x, resize.y);
+                if (flipVertically) {
+                    urlBuilder.flipVertically();
+                }
+                if (flipHorizontally) {
+                    urlBuilder.flipHorizontally();
+                }
+            }
+
+            if (cropRect != null) {
+                urlBuilder.crop(cropRect.top, cropRect.left, cropRect.bottom, cropRect.right);
+            }
+
+            if (fit) {
+                urlBuilder.resize(view.getLayoutParams().width, view.getLayoutParams().height);
+            }
+
+            if (!noSmart) {
+                urlBuilder.smart();
+            }
+
+            if (!noTrim) {
+                urlBuilder.trim();
+            }
+
+            if (!noWebP) {
+                urlBuilder.format(ThumborUrlBuilder.ImageFormat.WEBP);
+            }
+
+            if (filters != null && filters.size() > 0) {
+                urlBuilder.filter((String[]) filters.toArray());
+            }
+
+            if (actualScaleType == ScalingUtils.ScaleType.CENTER ||
+                    actualScaleType == ScalingUtils.ScaleType.FIT_CENTER ||
+                    actualScaleType == ScalingUtils.ScaleType.CENTER_INSIDE ||
+                    actualScaleType == ScalingUtils.ScaleType.FIT_START ||
+                    actualScaleType == ScalingUtils.ScaleType.FIT_END ||
+                    actualScaleType == ScalingUtils.ScaleType.FIT_XY) {
+                urlBuilder.fitIn();
+            } else {
+//            actualScaleType == ScalingUtils.ScaleType.CENTER_CROP
+//            actualScaleType == ScalingUtils.ScaleType.FOCUS_CROP
+//            actualScaleType == null
+            }
+        }
+        if (urlBuilder != null) {
+            this.uri = Uri.parse(urlBuilder.toUrl());
+        }
 
         GenericDraweeHierarchy hierarchy = view.getHierarchy();
 
@@ -331,15 +472,16 @@ public class RFresco {
             isControllerChange = true;
         } else if (request == null && isControllerChange) {
             controllerBuilder.setUri(uri);
+            if (enableLowImage && urlBuilder != null) {
+                //黑白，质量1
+                controllerBuilder.setLowResImageRequest(ImageRequest.fromUri(urlBuilder.filter(ThumborUrlBuilder.grayscale(), ThumborUrlBuilder.quality(1)).toUrl()));
+            }
         }
+
 
         if (isControllerChange) {
             controllerBuilder.setOldController(view.getController());
             controller = controllerBuilder.build();
-        }
-
-        if (sizeRatio > 0) {
-            view.setAspectRatio(sizeRatio);
         }
 
         if (isHierarchyChange) {

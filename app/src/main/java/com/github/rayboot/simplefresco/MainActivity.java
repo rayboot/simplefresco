@@ -1,18 +1,12 @@
-package com.rayboot.simplefresco;
+package com.github.rayboot.simplefresco;
 
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.rayboot.fresco.builder.RFresco;
-
-import java.io.File;
+import com.github.rayboot.fresco.builder.RFresco;
 
 public class MainActivity extends AppCompatActivity {
 

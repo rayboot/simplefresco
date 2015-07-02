@@ -10,7 +10,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.rayboot.simplefresco;
+package com.github.rayboot.simplefresco;
 
 
 import android.content.Context;
