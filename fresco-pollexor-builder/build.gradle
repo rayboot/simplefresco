@@ -40,6 +40,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    lintOptions {
+        abortOnError false
+    }
+
 }
 
 dependencies {
@@ -49,5 +53,5 @@ dependencies {
     compile 'com.squareup:pollexor:2.0.2'
 }
 
-//apply from: '../pom_generator_v1.gradle'
-//apply from: '../bintray_upload_v1.gradle'
+apply from: '../install.gradle'
+apply from: '../bintray.gradle'
