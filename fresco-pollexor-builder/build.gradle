@@ -13,7 +13,7 @@ ext {
     siteUrl = 'https://github.com/rayboot/simplefresco'
     gitUrl = 'https://github.com/rayboot/simplefresco.git'
 
-    libraryVersion = project.version
+    libraryVersion = "1.1"
 
     developerId = 'rayboot'
     developerName = 'Yan Shi'
@@ -32,7 +32,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 22
         versionCode 1
-        versionName "1.0"
+        versionName "1.1"
     }
     buildTypes {
         release {
