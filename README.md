@@ -13,14 +13,20 @@ RFresco.load(imageUrl)
 ```
 
 
-Use
+Usage
 --------
 
 Gradle:
 
-    com.github.rayboot.simplefresco:fresco-builder:1.2
+    dependencies {
+        compile 'com.github.rayboot.simplefresco:fresco-builder:1.2'
+    }
 
 or
 
-    com.github.rayboot.simplefresco:fresco-pollexor-builder:1.2
+    dependencies {
+        compile 'com.github.rayboot.simplefresco:fresco-pollexor-builder:1.2'
+    }
+
+    
 
