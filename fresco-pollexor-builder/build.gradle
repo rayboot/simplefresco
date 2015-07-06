@@ -13,7 +13,7 @@ ext {
     siteUrl = 'https://github.com/rayboot/simplefresco'
     gitUrl = 'https://github.com/rayboot/simplefresco.git'
 
-    libraryVersion = "1.1"
+    libraryVersion = "1.2"
 
     developerId = 'rayboot'
     developerName = 'Yan Shi'
@@ -29,10 +29,10 @@ android {
     buildToolsVersion "22.0.1"
 
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 9
         targetSdkVersion 22
         versionCode 1
-        versionName "1.1"
+        versionName "1.2"
     }
     buildTypes {
         release {
@@ -48,8 +48,8 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile "com.facebook.fresco:fresco:0.5+"
-    compile 'com.facebook.fresco:imagepipeline-okhttp:0.5+'
+    compile "com.facebook.fresco:fresco:0.5.3"
+    compile 'com.facebook.fresco:imagepipeline-okhttp:0.5.3'
     compile 'com.squareup:pollexor:2.0.2'
 }
 
